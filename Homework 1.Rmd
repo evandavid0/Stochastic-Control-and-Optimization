@@ -1,0 +1,151 @@
+
+---
+title: "Homework 1"
+subtitle: "*Evan David (ead955)*"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Problem 1
+
+We want to prove $(A^{-1})^{T} = (A^T)^{-1}$
+
+Let us define $B = (A^{-1})$
+
+Then $B^T = (A^{-1})^T$
+
+By definition, $AB = A(A^{-1}) = I$, the identity matrix
+
+It follows that $(AB)^T = I^T = I$, or $B^TA^T = I$
+
+Then multiplying both sides by $(A^T)^{-1}$, we have $B^TA^T(A^T)^{-1} = I(A^T)^{-1}$
+
+That gives $B^TI = (A^T)^{-1}$
+
+Then we have $B^T = (A^T)^{-1}$
+
+And so $B^T = (A^{-1})^T = (A^T)^{-1}$
+
+## Problem 2
+
+We will first set up the problem. We'll define $x_1$ as first mortgage loans, $x_2$ as second mortgage loans, $x_3$ as home improvement loans, and $x_4$ as personal overdraft loans.
+
+From the problem we know the following:
+
+1. In total $250 million is lent out. This is represented by the equation:
+$$x_1 + x_2 + x_3 + x_4  = 250$$
+2. First mortgages are 55% of all mortgages (i.e., first and second mortgage) issued.
+$$x_1 = 0.55(x_1 + x_2)$$
+Or, $$0.45x_1 - 0.55x_2 = 0$$
+3. Second mortgages are 25% of all loans issued. This gives:
+$$x_2  = 0.25(x_1 + x_2 + x_3 + x_4)$$
+Or, $$-0.25x_1 + 0.75x_2 - 0.25x_3 - 0.25x_4 = 0$$
+4. The average interest rate on all loans is 15%. From this, and the information we know about the interest rates of each loan type, we can say:
+$$0.14x_1 + 0.2x_2 + 0.2x_3 + 0.1x_4 = 0.15(x_1 + x_2 + x_3 + x_4)$$
+Or, $$-0.01x_1 + 0.05x_2 + 0.05x_3 - 0.05x_4 = 0$$
+From these equations we can set up a matrix equation $$Ax = y$$
+
+$$\left[\begin{array}
+{rrrr}
+1 & 1 & 1 & 1 \\
+0.45 & -0.55 & 0 & 0 \\
+-0.25 & 0.75 & -0.25 & -0.25 \\
+-0.01 & 0.05 & 0.05 & -0.05
+\end{array}\right]\left[\begin{array}
+{r}
+x_1 \\
+x_2 \\
+x_3 \\
+x_4
+\end{array}\right] = \left[\begin{array}
+{r}
+250 \\
+0 \\
+0 \\
+0
+\end{array}\right]$$
+Now we solve for x using matrix inversion:
+
+$$x = A^{-1}y$$
+
+```{r, include=FALSE}
+A = matrix(c(1,1,1,1,.45,-.55,0,0,-.25,.75,-.25,-.25,-.01, .05,.05,-.05),nrow = 4,ncol = 4)
+A = t(A)
+y = matrix(c(250,0,0,0))
+x = solve(A) %*% y
+```
+The solution then gives:
+```{r, echo=FALSE}
+x
+```
+And these are the values of $x_1$, $x_2$, $x_3$, and $x_4$, in millions, that give the best lending strategy.
+
+## Problem 3
+
+In this problem, we want to maximize profit by determining the best number of units manufactured for each variant. 
+
+### Decision Variables
+$x_1$, $x_2$, $x_3$, and $x_4$ will represent the number of units manufactured for each type of variant.
+
+### Constraints
+First, the non-negative constraints:
+$$x_1, x_2, x_3, x_4 \geqslant 0$$
+Additionally, we have constraints for assembly, polishing, and packing, which are as follows:
+$$2x_1 + 4x_2 + 3x_3 + 7x_4 \leqslant 100000$$
+$$3x_1 + 2x_2 + 3x_3 + 4x_4 \leqslant 50000$$
+$$2x_1 + 3x_2 + 2x_3 + 5x_4 \leqslant 60000$$
+
+### Objective
+
+We want to maximize profit, so we will maximize:
+$$1.5x_1 + 2.5x_2 + 3x_3 + 4.5x_4$$
+
+## Problem 4
+
+### Part a
+
+The following R code will generate a 20 by 20 Lehmer matrix A:
+```{r}
+A = matrix(0,nrow = 20,ncol = 20)
+
+for (i in 1:nrow(A)) {
+  for (j in 1:ncol(A)){
+    A[i,j] = min(i,j)/max(i,j)
+    
+  }
+}
+```
+### Part b
+
+Test whether A is symmetric, by checking if $A = A^T$
+```{r}
+# checks whether the transpose of A is equal to A
+all.equal(t(A),A)
+```
+Therefore A is symmetric.
+
+### Part c
+
+```{r}
+C = solve(A)
+all.equal(C %*% A, diag(20))
+```
+Therefore C is the correct inverse of A.
+
+### Part d
+
+```{r}
+d = c(1:10,10:1)
+d
+```
+### Part e
+
+$$x = A^{-1}Cd$$
+```{r}
+x = solve(A) %*% C %*% d
+x
+```
+
